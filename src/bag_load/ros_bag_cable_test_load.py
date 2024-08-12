@@ -14,8 +14,6 @@ sys.path.append(current_dir + "/..")
 # import custom package (make sure the utils is added to the path)
 import utils as ul
 
-import utils as ul
-
 if __name__ == "__main__":
     # set the bag name here
     bagfileName = "payload_retraction_0808_trial1.bag"
