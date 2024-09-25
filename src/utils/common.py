@@ -1,3 +1,27 @@
+'''
+MIT License
+
+Copyright (c) 2024 FSC Lab
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+'''
 import numpy as np
 from scipy.spatial.transform import Rotation
 
@@ -19,64 +43,29 @@ def QuaT2EulerAngles(imuLogging):
         yaw[i] = euler[2]
     return roll, pitch, yaw
 
-def QuaT2RotationMatrix(imuLogging):
-    
 
-# used for testing r.as_matrix
+# quad 2 rotation matrix R_IB
 def QuaT2RotationMatrix(w, x, y, z):
-""""
-    L = [-q1 q0 q3 -q2;
-         -q2 -q3 q0 q1;
-         -q3 q2 -q1 q0]
+    '''
+        L = [-q1 q0 q3 -q2;
+            -q2 -q3 q0 q1;
+            -q3 q2 -q1 q0]
+    '''
+    L = np.array([[-x, w, z, -y],
+                  [-y, -z, w, x],
+                  [-z, y -x, w]])
+    '''
     R = [-q1 q0 -q3 q2;
          -q2 q3 q0 -q1;
          -q3 -q2 q1 q0]
-    R_IB = RL^T
+    '''
+    R = np.array([[-x, w, -z, y],
+                  [-y, z, w, -x],
+                  [-z, -y, x, w]])
+    # R_IB = RL^T
+    return R @ L.transpose()
 
-    pose[1].L(0,0) = - pose[1].q1;
-    pose[1].L(1,0) = - pose[1].q2;
-    pose[1].L(2,0) = - pose[1].q3;
-
-    pose[1].L(0,1) = pose[1].q0;
-    pose[1].L(1,2) = pose[1].q0;
-    pose[1].L(2,3) = pose[1].q0;
-
-    pose[1].L(0,2) = pose[1].q3;
-    pose[1].L(0,3) = - pose[1].q2;
-    pose[1].L(1,1) = - pose[1].q3;
-    pose[1].L(1,3) = pose[1].q1;
-    pose[1].L(2,1) = pose[1].q2;
-    pose[1].L(2,2) = - pose[1].q1;
-
-    pose[1].R(0,0) = - pose[1].q1;
-    pose[1].R(1,0) = - pose[1].q2;
-    pose[1].R(2,0) = - pose[1].q3;
-
-    pose[1].R(0,1) = pose[1].q0;
-    pose[1].R(1,2) = pose[1].q0;
-    pose[1].R(2,3) = pose[1].q0;
-
-    pose[1].R(0,2) = -pose[1].q3;
-    pose[1].R(0,3) =  pose[1].q2;
-    pose[1].R(1,1) =  pose[1].q3;
-    pose[1].R(1,3) = -pose[1].q1;
-    pose[1].R(2,1) = -pose[1].q2;
-    pose[1].R(2,2) =  pose[1].q1; 
-
-    pose[1].R_IB = pose[1].R * pose[1].L.transpose();
-    pose[1].R_BI = pose[1].R_IB.transpose();
-    // position is straight forward
-    pose[1].Position(0) =  OptiTrackdata.pose.position.x;
-    pose[1].Position(1) =  OptiTrackdata.pose.position.y;
-    pose[1].Position(2) =  OptiTrackdata.pose.position.z;
-
-"""
-    L = np.zeros((3, 4))
-    R = np.zeros((3, 4))
-    
-    pass
-
-
+# linear interpolation
 # determine whether there are entries lie in the given interval
 def FindElementFromInterval(data, start, end):
     startIdx = -1
